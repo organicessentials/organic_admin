@@ -1,0 +1,216 @@
+import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import React, { useEffect, useRef, useState } from "react";
+import { deletePayoutId, showPayoutRefferals } from "../../service/api/payout";
+import { useRouter } from "next/router";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+
+const index = () => {
+  const router = useRouter();
+  const [payouts, setPayouts] = useState([]);
+  const [selectedRecords, setSelectedRecords] = useState([]);
+  const [ids, setIds] = useState("");
+  const toast = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState(false);
+
+  const getData = () => {
+    showPayoutRefferals()
+      .then((data) => setPayouts(data))
+      .catch((error) => console.log(error));
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const deletePayoutRefferals = () => {
+    deletePayoutId({ids}).then((res)=>{
+      setDeleteDialog(false);
+      getData()
+    }).catch((err)=>{
+      console.log(err);
+    })
+  };
+
+  const deleteAction = (rowData) => {
+    let idsToDelete;
+
+    if (selectedRecords && selectedRecords.length > 0) {
+      // If there are selected records, use their IDs
+      idsToDelete = selectedRecords.map((doc) => doc._id);
+    } else if (rowData) {
+      // If no selected records, and rowData is provided, use its ID
+      idsToDelete = [rowData._id];
+    } else {
+      // Handle the case when neither selected records nor rowData is available
+      console.error("No records to delete");
+      return;
+    }
+
+    // Set the ids and open the delete dialog
+    setIds(idsToDelete);
+    setDeleteDialog(true);
+  };
+
+  const header = (
+    <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+      <div className="flex flex-wrap gap-2">
+        <Button label={`all(${payouts.length})`} link />
+
+        <Button
+          onClick={deleteAction}
+          link
+          label="Delete"
+          icon="pi pi-trash"
+          severity="danger"
+        />
+
+        {/* <Dropdown
+          name="status"
+          placeholder="Change Status"
+          className="w-full md:w-14rem"
+        />
+        <Button>Apply</Button> */}
+      </div>
+      <span className="p-input-icon-left">
+        <i className="pi pi-search" />
+        <InputText
+          type="search"
+          onInput={(e) => setGlobalFilter(e.target.value)}
+          placeholder="Search..."
+        />
+      </span>
+    </div>
+  );
+
+  const bodyTemplate = (rowData) => {
+    return (
+      <React.Fragment>
+        <Button
+          onClick={() => editPayout(rowData)}
+          icon="pi pi-eye"
+          rounded
+          outlined
+          className="mr-2"
+        />
+        <Button
+          icon="pi pi-trash"
+          rounded
+          outlined
+          severity="danger"
+          onClick={() => deleteAction(rowData)}
+        />
+      </React.Fragment>
+    );
+  };
+
+  const deleteDialogFooter = (
+    <React.Fragment>
+      <Button
+        label="No"
+        icon="pi pi-times"
+        outlined
+        onClick={() => setDeleteDialog(false)}
+      />
+      <Button
+        label="Yes"
+        icon="pi pi-check"
+        severity="danger"
+        onClick={deletePayoutRefferals}
+      />
+    </React.Fragment>
+  );
+
+  const editPayout = (rowData) => {
+    router.push(`/payouts/${rowData._id}`);
+  };
+
+  const actionBodyDate = (rowData) => {
+    const date = new Date(rowData.createAt);
+    const formattedDate = date.toLocaleDateString("en-US");
+    return <>{formattedDate}</>;
+  };
+
+  const actionBodyManual = () => {
+    return <>Manual</>;
+  };
+
+  const actionBodyAdmin = () => {
+    return <>Admin</>;
+  };
+
+  const actionBodyId = (rowData) => {
+    return <a>{rowData._id.substring(0, 6)}</a>;
+  };
+  const actionBodyIndex = (rowData, i) => {
+    return <>{i.rowIndex + 1}</>;
+  };
+
+  return (
+    <>
+      <Toast ref={toast} />
+      <DataTable
+        value={payouts}
+        stripedRows
+        loading={loading}
+        selection={selectedRecords}
+        selectionMode="multiple"
+        onSelectionChange={(e) => setSelectedRecords(e.value)}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[5, 10, 25]}
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+        header={header}
+      >
+        <Column selectionMode="multiple" exportable={false}></Column>
+        <Column body={actionBodyIndex} header="Payout ID"></Column>
+        <Column field="amount" header="Amount"></Column>
+        <Column body={actionBodyId} header="Affilate"></Column>
+        <Column field="email" header="Referrals"></Column>
+        <Column body={actionBodyAdmin} header="Generated By"></Column>
+        <Column body={actionBodyManual} header="Payment Method"></Column>
+        <Column
+          bodyStyle={{ color: "#50cb50", fontWeight: "bold" }}
+          field="status"
+          header="Status"
+        ></Column>
+        <Column body={actionBodyDate} header="Date"></Column>
+        <Column
+          body={bodyTemplate}
+          header="Actions"
+          exportable={false}
+        ></Column>
+      </DataTable>
+      <Dialog
+        visible={deleteDialog}
+        style={{ width: "32rem" }}
+        breakpoints={{ "960px": "75vw", "641px": "90vw" }}
+        header="Confirm"
+        modal
+        footer={deleteDialogFooter}
+        onHide={() => setDeleteDialog(false)}
+      >
+        <div className="confirmation-content">
+          <i
+            className="pi pi-exclamation-triangle mr-3"
+            style={{ fontSize: "2rem" }}
+          />
+          <span>Are you sure you want to delete?</span>
+        </div>
+      </Dialog>
+    </>
+  );
+};
+
+index.getInitialProps = async () => {
+  // You can set the value for pageTitle in getInitialProps
+  return { pageTitle: { url: "/payouts", name: "Payouts Page" } };
+};
+
+export default index;
