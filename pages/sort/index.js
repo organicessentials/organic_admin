@@ -13,14 +13,32 @@ const Index = () => {
     getData();
   }, [selectedCategory]); // Fetch data whenever selectedCategory changes
 
+  // const fetchData = async () => {
+  //   try {
+  //     const data = await showProduct();
+  //     if (selectedCategory) {
+  //       const filteredRecords = data.filter(
+  //         (record) =>
+  //           record.category.toLowerCase() ===
+  //           selectedCategory?.name.toLowerCase()
+  //       );
+  //       setProducts(filteredRecords);
+  //     } else {
+  //       setProducts(data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+
   const fetchData = async () => {
     try {
       const data = await showProduct();
       if (selectedCategory) {
-        const filteredRecords = data.filter(
-          (record) =>
-            record.category.toLowerCase() ===
-            selectedCategory?.name.toLowerCase()
+        const filteredRecords = data.filter((record) =>
+          record.category.some(
+            (doc) => doc.name.toLowerCase() === selectedCategory.name.toLowerCase()
+          )
         );
         setProducts(filteredRecords);
       } else {
@@ -30,6 +48,9 @@ const Index = () => {
       console.error("Error fetching data:", error);
     }
   };
+  
+
+  
 
   const getData = async () => {
     getCategories().then((data) => setCategory(data));

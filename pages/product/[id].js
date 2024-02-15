@@ -73,6 +73,8 @@ const Edit = () => {
     sku: "",
     seoTitle:"",
     seoDescription: "",
+    slug:"",
+    shortDescription
   });
 
   console.log(formData);
@@ -229,6 +231,7 @@ const Edit = () => {
       formVal.append("name",formData.name);
       formVal.append("_id",formData._id)
       formVal.append("description",formData.description);
+      formVal.append("shortDescription",formData.shortDescription);
       formVal.append("status",formData.status);
       formVal.append("category",JSON.stringify(formData.category))
       formVal.append("price",formData.price)
@@ -236,6 +239,7 @@ const Edit = () => {
       formVal.append("sku",formData.sku)
       formVal.append("seoTitle",formData.seoTitle)
       formVal.append("seoDescription",formData.seoDescription)
+      formVal.append("slug",formData.slug)
       formVal.append("oldImage",formData.image);
       formVal.append("image", image);
       console.log(formVal);
