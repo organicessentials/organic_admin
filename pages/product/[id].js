@@ -74,7 +74,7 @@ const Edit = () => {
     seoTitle:"",
     seoDescription: "",
     slug:"",
-    shortDescription
+    shortDescription:""
   });
 
   console.log(formData);
