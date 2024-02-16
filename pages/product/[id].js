@@ -10,7 +10,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import RedirectButton from "../../components/RedirectButton";
 import { index as getCategories } from "../../service/api/category";
-import { Message } from 'primereact/message';
+import { Message } from "primereact/message";
 import {
   update,
   show,
@@ -41,11 +41,12 @@ const Edit = () => {
   const editorRef = useRef(null);
   const { id } = router.query; // Access the value of the "id" parameter
   const toast = useRef(null);
-  const inputEl = useRef(null); 
+  const inputEl = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [slugAdded, setSlugAdded] = useState(false);
   const [image, setImage] = useState("");
+  console.log(image);
   const [variants, setVariants] = useState([]);
   const [variant, setVariant] = useState("");
   const [attribute, setAttribute] = useState("");
@@ -66,19 +67,18 @@ const Edit = () => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category:[],
+    category: [],
     status: "",
     price: "",
     comparePrice: "",
     sku: "",
-    seoTitle:"",
+    seoTitle: "",
     seoDescription: "",
-    slug:"",
-    shortDescription:""
+    slug: "",
+    shortDescription: "",
   });
 
   console.log(formData);
-
 
   useEffect(() => {
     getData();
@@ -148,16 +148,12 @@ const Edit = () => {
     let items = selectedItem.map((doc) => ({ name: doc.name, _id: doc._id }));
     setFormData({ ...formData, category: items });
   };
-  
-  
- console.log(formData.category);
+
+  console.log(formData.category);
 
   const removeCategory = (selectedItem) => {
-    setFormData({...formData, category: selectedItem});
+    setFormData({ ...formData, category: selectedItem });
   };
-  
-  
-  
 
   // const handleUpload = (e) => {
   //   const file = e.target.files[0];
@@ -228,26 +224,26 @@ const Edit = () => {
       // for (const key in formData) {
       //   formVal.append(key, formData[key]);
       // }
-      formVal.append("name",formData.name);
-      formVal.append("_id",formData._id)
-      formVal.append("description",formData.description);
-      formVal.append("shortDescription",formData.shortDescription);
-      formVal.append("status",formData.status);
-      formVal.append("category",JSON.stringify(formData.category))
-      formVal.append("price",formData.price)
-      formVal.append("comparePrice",formData.comparePrice)
-      formVal.append("sku",formData.sku)
-      formVal.append("seoTitle",formData.seoTitle)
-      formVal.append("seoDescription",formData.seoDescription)
-      formVal.append("slug",formData.slug)
-      formVal.append("oldImage",formData.image);
+      formVal.append("name", formData.name);
+      formVal.append("_id", formData._id);
+      formVal.append("description", formData.description);
+      formVal.append("shortDescription", formData.shortDescription);
+      formVal.append("status", formData.status);
+      formVal.append("category", JSON.stringify(formData.category));
+      formVal.append("price", formData.price);
+      formVal.append("comparePrice", formData.comparePrice);
+      formVal.append("sku", formData.sku);
+      formVal.append("seoTitle", formData.seoTitle);
+      formVal.append("seoDescription", formData.seoDescription);
+      formVal.append("slug", formData.slug);
+      formVal.append("oldImage", formData.image);
       formVal.append("image", image);
       console.log(formVal);
       event.preventDefault();
       update(formVal);
       setIsLoading(true);
       setTimeout(() => {
-      window.location.replace("/product");
+        window.location.replace("/product");
         // router.push("/product");
       }, 2000);
     }
@@ -303,23 +299,23 @@ const Edit = () => {
     if (!newData.comparePrice) {
       updateVariants(newData);
       setVariants(_products);
-       toast.current.show({
+      toast.current.show({
         severity: "success",
         summary: "Successful",
         detail: "Record Added",
         life: 3000,
       });
-    }else if(newData.comparePrice <= newData.price) {
+    } else if (newData.comparePrice <= newData.price) {
       toast.current.show({
-           severity: "error",
-           summary: "error",
-          detail: "ComparePrice Less Then",
-          life: 3000,
-         });
-    }else{
+        severity: "error",
+        summary: "error",
+        detail: "ComparePrice Less Then",
+        life: 3000,
+      });
+    } else {
       updateVariants(newData);
       setVariants(_products);
-       toast.current.show({
+      toast.current.show({
         severity: "success",
         summary: "Successful",
         detail: "Record Added",
@@ -349,7 +345,7 @@ const Edit = () => {
     console.log(options);
     return (
       <InputNumber
-      style={{width:"80px"}}
+        style={{ width: "80px" }}
         value={options.value}
         onValueChange={(e) => options.editorCallback(e.value)}
         mode="currency"
@@ -362,7 +358,7 @@ const Edit = () => {
   const uploadImage = (e) => {
     const file = e.target.files[0]; // Get the uploaded file from the event
     if (!file) {
-      return; 
+      return;
     }
     if (!file.type.startsWith("image/")) {
       toast.current.show({
@@ -408,11 +404,11 @@ const Edit = () => {
 
   return (
     <>
-    <div className="grid">
-      {/* <div className="col-11">
+      <div className="grid">
+        {/* <div className="col-11">
         <Toolbar end={rightToolbarTemplate}></Toolbar>
       </div> */}
-      
+
         <div className="col-8">
           <div className="card">
             <Toast ref={toast} />
@@ -534,21 +530,24 @@ const Edit = () => {
             </div>
           </div>
           <Card title="Media" className="card">
-            <input style={{display: "none"}} ref={inputEl} type="file" onChange={uploadImage} />
+            <input
+              style={{ display: "none" }}
+              ref={inputEl}
+              type="file"
+              onChange={uploadImage}
+            />
             <Button
-          label="Upload Image"
-          icon="pi pi-upload"
-          
-          onClick={() => inputEl.current.click()}
-        />
-            {formData.image ? (
-              <img
-                height={200}
-                width={300}
-                src={!image ? formData.image : URL.createObjectURL(image)}
-                alt=""
-              />
-            ) : null}
+              label="Upload Image"
+              icon="pi pi-upload"
+              onClick={() => inputEl.current.click()}
+            />
+            {!image ? (
+              <img height={200} width={300} src={formData.image} alt="" />
+            ) : image ? (
+              <img src={URL.createObjectURL(image)} alt="" />
+            ) : (
+              <p>No image selected</p>
+            )}
           </Card>
           <Card title="Pricing" className="card">
             <div className="p-fluid formgrid grid">
@@ -598,7 +597,6 @@ const Edit = () => {
               </div>
             </div>
           </Card>
-
         </div>
         <div className="col-4">
           <div className="card">
@@ -641,168 +639,165 @@ const Edit = () => {
             </div>
           </div>
         </div>
-      
-    </div>
-    <div>
-    {showCard ? (
-            <Card className="my-4">
-              <div className="col-6">
-                <div className="field col-12">
-                  <label htmlFor="status">Select Attributes</label>
-                  <Dropdown
-                    value={variant}
-                    onChange={(e) => setVariant(e.value)}
-                    options={selectVariant}
-                    optionLabel="name"
-                    placeholder="Select Attributes"
-                    className="w-full"
-                  />
-                </div>
-                <div className="field col-12">
-                  <label htmlFor="category">Select Attributes Value</label>
-                  <br />
-                  <select
-                    onChange={(e) => setAttribute(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "8px",
-                      borderColor: "#ced4da",
-                    }}
-                    name=""
-                    id=""
-                  >
-                    <option value="">Select Attributes Value</option>
-                    {selectAttribute.map((doc) => (
-                      <option value={doc.name}>{doc.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="field col-12">
-                  <label htmlFor="category">Select Variants</label>
-                  <Dropdown
-                    value={value}
-                    onChange={(e) => setValue(e.value)}
-                    options={selectValue}
-                    name="Value"
-                    optionLabel="name"
-                    placeholder="Select Variants"
-                    className="w-full"
-                  />
-                </div>
-                <div className="field col-12">
-                  <label htmlFor="category">Select Variants Value</label>
-                  <Dropdown
-                    value={varainatVal}
-                    onChange={(e) => setVarainatval(e.value)}
-                    options={variantValue}
-                    name="Value"
-                    optionLabel="name"
-                    placeholder="Value"
-                    className="w-full"
-                  />
-                </div>
-                <div className="flex justify-content-center">
-                  <Button
-                    onClick={addVariants}
-                    type="submit"
-                    label={isLoading ? "Adding..." : "Add"}
-                  />
-                </div>
-              </div>
-            </Card>
-          ) : null}
-          <div className="card p-fluid">
-           
-            <div class="flex align-content-start flex-wrap">
-    <div class="flex align-items-center justify-content-center w-4rem h-4rem font-bold border-round m-2">
-    <Checkbox
-                  onChange={(e) => setShowCard(e.checked)}
-                  checked={showCard}
-                ></Checkbox>
-    </div>
-    <div class="flex align-items-center justify-content-start w-16rem h-4rem font-bold border-round m-2">
-    <Message text="Select Variants" />
-    </div>
-</div>
-           
-            <Dialog
-              visible={deleteDialog}
-              style={{ width: "32rem" }}
-              breakpoints={{ "960px": "75vw", "641px": "90vw" }}
-              header="Confirm"
-              modal
-              footer={deleteDialogFooter}
-              onHide={() => setDeleteDialog(false)}
-            >
-              <div className="confirmation-content">
-                <i
-                  className="pi pi-exclamation-triangle mr-3"
-                  style={{ fontSize: "2rem" }}
+      </div>
+      <div>
+        {showCard ? (
+          <Card className="my-4">
+            <div className="col-6">
+              <div className="field col-12">
+                <label htmlFor="status">Select Attributes</label>
+                <Dropdown
+                  value={variant}
+                  onChange={(e) => setVariant(e.value)}
+                  options={selectVariant}
+                  optionLabel="name"
+                  placeholder="Select Attributes"
+                  className="w-full"
                 />
-                <span>Are you sure you want to delete?</span>
               </div>
-            </Dialog>
-          </div>
-    <DataTable
-              value={variants}
-              editMode="row"
-              dataKey="id"
-              onRowEditComplete={onRowEditComplete}
-              tableStyle={{ minWidth: "60rem" }}
-            >
-              <Column rowEditor bodyStyle={{ textAlign: "center" }}></Column>
-              <Column field="attribute" header="Attribute"></Column>
-              <Column field="attributeValue" header="AV"></Column>
-              <Column field="variant" header="Variant"></Column>
-              <Column field="variantValue" header="VV"></Column>
-              <Column
-                field="price"
-                header="Price"
-                body={priceBodyTemplate}
-                editor={(options) => priceEditor(options)}
-              ></Column>
-              <Column
-                field="comparePrice"
-                header="Compare at Price"
-                body={comparePriceBodyTemplate}
-                editor={(options) => priceEditor(options)}
-              ></Column>
-              <Column
-                field="description"
-                header="Description"
-                body={descriptionBodyTemplate}
-                editor={(options) => textEditor(options)}
-              ></Column>
-              <Column body={actionBodyTemplate} exportable={false}></Column>
-            </DataTable>
+              <div className="field col-12">
+                <label htmlFor="category">Select Attributes Value</label>
+                <br />
+                <select
+                  onChange={(e) => setAttribute(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    borderColor: "#ced4da",
+                  }}
+                  name=""
+                  id=""
+                >
+                  <option value="">Select Attributes Value</option>
+                  {selectAttribute.map((doc) => (
+                    <option value={doc.name}>{doc.name}</option>
+                  ))}
+                </select>
+              </div>
 
-    </div>
-    <div className="my-4">
-    <Card title="SEO" className="card">
-            <div className="flex flex-column gap-2">
-              <label htmlFor="title">Title</label>
-              <InputText
-                id="title"
-                name="seoTitle"
-                value={formData.seoTitle}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex flex-column gap-2">
-              <label htmlFor="description">Description</label>
-              <InputTextarea
-                id="seoDescription"
-                value={formData.seoDescription}
-                rows={5}
-                cols={30}
-                name="seoDescription"
-                onChange={handleChange}
-              />
+              <div className="field col-12">
+                <label htmlFor="category">Select Variants</label>
+                <Dropdown
+                  value={value}
+                  onChange={(e) => setValue(e.value)}
+                  options={selectValue}
+                  name="Value"
+                  optionLabel="name"
+                  placeholder="Select Variants"
+                  className="w-full"
+                />
+              </div>
+              <div className="field col-12">
+                <label htmlFor="category">Select Variants Value</label>
+                <Dropdown
+                  value={varainatVal}
+                  onChange={(e) => setVarainatval(e.value)}
+                  options={variantValue}
+                  name="Value"
+                  optionLabel="name"
+                  placeholder="Value"
+                  className="w-full"
+                />
+              </div>
+              <div className="flex justify-content-center">
+                <Button
+                  onClick={addVariants}
+                  type="submit"
+                  label={isLoading ? "Adding..." : "Add"}
+                />
+              </div>
             </div>
           </Card>
-    </div>
+        ) : null}
+        <div className="card p-fluid">
+          <div class="flex align-content-start flex-wrap">
+            <div class="flex align-items-center justify-content-center w-4rem h-4rem font-bold border-round m-2">
+              <Checkbox
+                onChange={(e) => setShowCard(e.checked)}
+                checked={showCard}
+              ></Checkbox>
+            </div>
+            <div class="flex align-items-center justify-content-start w-16rem h-4rem font-bold border-round m-2">
+              <Message text="Select Variants" />
+            </div>
+          </div>
+
+          <Dialog
+            visible={deleteDialog}
+            style={{ width: "32rem" }}
+            breakpoints={{ "960px": "75vw", "641px": "90vw" }}
+            header="Confirm"
+            modal
+            footer={deleteDialogFooter}
+            onHide={() => setDeleteDialog(false)}
+          >
+            <div className="confirmation-content">
+              <i
+                className="pi pi-exclamation-triangle mr-3"
+                style={{ fontSize: "2rem" }}
+              />
+              <span>Are you sure you want to delete?</span>
+            </div>
+          </Dialog>
+        </div>
+        <DataTable
+          value={variants}
+          editMode="row"
+          dataKey="id"
+          onRowEditComplete={onRowEditComplete}
+          tableStyle={{ minWidth: "60rem" }}
+        >
+          <Column rowEditor bodyStyle={{ textAlign: "center" }}></Column>
+          <Column field="attribute" header="Attribute"></Column>
+          <Column field="attributeValue" header="AV"></Column>
+          <Column field="variant" header="Variant"></Column>
+          <Column field="variantValue" header="VV"></Column>
+          <Column
+            field="price"
+            header="Price"
+            body={priceBodyTemplate}
+            editor={(options) => priceEditor(options)}
+          ></Column>
+          <Column
+            field="comparePrice"
+            header="Compare at Price"
+            body={comparePriceBodyTemplate}
+            editor={(options) => priceEditor(options)}
+          ></Column>
+          <Column
+            field="description"
+            header="Description"
+            body={descriptionBodyTemplate}
+            editor={(options) => textEditor(options)}
+          ></Column>
+          <Column body={actionBodyTemplate} exportable={false}></Column>
+        </DataTable>
+      </div>
+      <div className="my-4">
+        <Card title="SEO" className="card">
+          <div className="flex flex-column gap-2">
+            <label htmlFor="title">Title</label>
+            <InputText
+              id="title"
+              name="seoTitle"
+              value={formData.seoTitle}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="flex flex-column gap-2">
+            <label htmlFor="description">Description</label>
+            <InputTextarea
+              id="seoDescription"
+              value={formData.seoDescription}
+              rows={5}
+              cols={30}
+              name="seoDescription"
+              onChange={handleChange}
+            />
+          </div>
+        </Card>
+      </div>
     </>
   );
 };
